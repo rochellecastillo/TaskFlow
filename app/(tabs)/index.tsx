@@ -1,4 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,36 +8,46 @@ import {
   View,
 } from "react-native";
 export default function App() {
+  const [task, setTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+  function handleAddTask() {
+    if (task.trim() === "") return;
+    setTasks([
+      ...tasks,
+      { id: Date.now().toString(), title: task, completed: false },
+    ]);
+    setTask("");
+  }
   return (
     <View style={styles.container}>
       <View style={headerStyles.header}>
         <Text style={headerStyles.title}>TaskFlow</Text>
       </View>
       <View style={styles.inputRow}>
-        <TextInput style={styles.input} placeholder="Enter Task" />
-        <TouchableOpacity style={styles.addButton}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Task"
+          value={task}
+          onChangeText={setTask}
+        />
+        <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
           <MaterialIcons name="add" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
-      <View style={styles.taskRow}>
-        <MaterialIcons
-          name="check-box-outline-blank"
-          size={20}
-          color="#5A6472"
-        />
-        <Text style={styles.taskText}>Study React Native</Text>
-      </View>
-      <View style={styles.taskRow}>
-        <MaterialIcons
-          name="check-box-outline-blank"
-          size={20}
-          color="#5A6472"
-        />
-        <Text style={styles.taskText}>Finish Assignment</Text>
-      </View>
+      {tasks.map((item) => (
+        <View key={item.id} style={styles.taskRow}>
+          <MaterialIcons
+            name={item.completed ? "check-box" : "check-box-outline-blank"}
+            size={20}
+            color={item.completed ? "#2E5BBA" : "#5A6472"}
+          />
+          <Text style={styles.taskText}>{item.title}</Text>
+        </View>
+      ))}
     </View>
   );
 }
+
 // headerStyles is kept separate from the rest of the screen's styles —
 // the header is a distinct visual region (title bar) that's a natural
 // candidate to later become its own component or shared layout.
