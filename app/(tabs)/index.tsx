@@ -60,6 +60,14 @@ export default function App() {
     }
     loadTasks();
   }
+  async function deleteTask(id) {
+    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    if (error) {
+      console.log("Error deleting task:", error.message);
+      return;
+    }
+    loadTasks();
+  }
 
   return (
     <View style={styles.container}>
@@ -78,7 +86,11 @@ export default function App() {
         </TouchableOpacity>
       </View>
       {tasks.map((item) => (
-        <TouchableOpacity key={item.id} onPress={() => toggleTask(item)}>
+        <TouchableOpacity
+          key={item.id}
+          onPress={() => toggleTask(item)}
+          onLongPress={() => deleteTask(item.id)}
+        >
           <View style={styles.taskRow}>
             <MaterialIcons
               name={item.completed ? "check-box" : "check-box-outline-blank"}
